@@ -1,6 +1,11 @@
-body{
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #222;
     margin: 0;
-    padding: 0;
 }
 *{
     font-family: 'Chakra Petch', sans-serif;
@@ -21,6 +26,7 @@ body{
 .winner{
     font-size: 32px;
     margin-top: 100px;
+    color: #fff;
 }
 .but{
     font-size: 26px;
@@ -38,10 +44,9 @@ body{
 
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(3,30%);
-    grid-template-rows: repeat(3, 30%);
-    grid-gap: 0;
-    align-items: center;
+    grid-template-columns: repeat(3, minmax(80px, 100px));
+    grid-template-rows: repeat(3, minmax(80px, 100px));
+    grid-gap: 10px;
     justify-content: center;
 }
 
@@ -50,10 +55,29 @@ body{
     height: 100%;
     text-align: center;
     vertical-align: middle;
-    background-color: #ffffff;
-    border: 2px solid #929292;
+    background-color: #fff;
+    border-radius: 5px;
     line-height: 100px;
     font-family: Arial, sans-serif;
-    font-size: 44px;
+    font-size: 56px;
+    font-weight: bold;
     cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s;
+}
+
+.grid-item:hover {
+    transform: translateY(-3px);
+}
+
+.grid-item:active {
+    transform: translateY(-1px);
+}
+
+.grid-item.X {
+    color: #e74c3c;
+}
+
+.grid-item.O {
+    color: #3498db;
 }
