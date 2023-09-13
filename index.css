@@ -21,9 +21,7 @@ body {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-
 }
-
 
 .winner{
     font-size: 32px;
@@ -41,8 +39,6 @@ body {
     bottom: 50px;
 }
 
-
-/*  */
 
 .grid-container {
     display: grid;
@@ -74,12 +70,4 @@ body {
 
 .grid-item:active {
     transform: translateY(-1px);
-}
-
-.grid-item.X {
-    color: #e74c3c;
-}
-
-.grid-item.O {
-    color: #3498db;
 }
