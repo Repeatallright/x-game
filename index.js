@@ -1,10 +1,13 @@
-let fieldBlock = document.getElementsByClassName("field");
+let boardBlock = document.getElementsByClassName("grid-container");
 let but = document.getElementsByClassName("but");
 let winner = document.getElementsByClassName("winner");
-let field = ["", "", "", "", "", "", "", "", ""];
-let act = "x";
+let board = ["", "", "", "", "", "", "", "", ""];
+let act = "X";
 let isWin;
-let winCoordinates = [
+
+let playerCord = [];
+let botCord = [];
+const winCoordinates = [
   [0, 1, 2],
   [3, 4, 5],
   [6, 7, 8],
@@ -12,51 +15,50 @@ let winCoordinates = [
   [1, 4, 7],
   [2, 5, 8],
   [0, 4, 8],
-  [6, 4, 2],
+  [2, 4, 6],
 ];
-let playerCord = [];
-let botCord = [];
 
 function render() {
-  fieldBlock[0].innerHTML = "";
+  boardBlock[0].innerHTML = "";
 
-  field.forEach((item, i) => {
+  board.forEach((item, i) => {
     let reqt = document.createElement("div");
-    reqt.classList.add("item");
+    reqt.classList.add("grid-item");
     reqt.id = i;
 
-    if (item === "x") {
+    if (item === "X") {
       let el = document.createElement("i");
       el.classList.add("fa-solid", "fa-xmark");
       reqt.appendChild(el);
-    } else if (item === "o") {
+    } else if (item === "O") {
       let el = document.createElement("i");
       el.classList.add("fa-regular", "fa-circle");
       reqt.appendChild(el);
     }
 
-    fieldBlock[0].appendChild(reqt);
+    boardBlock[0].appendChild(reqt);
   });
 }
 
-function changeField(info = 0) {
-  if (field[info] == "" && !isWin) {
+function changeboard(info = 0) {
+  if (board[info] == "" && !isWin) {
     info = parseInt(info);
     playerCord.push(info);
     step(info);
     setTimeout(() => {
-      bot();
+      let cord = minimax(board, act);
+      step(cord.index);
     }, 300);
   }
 }
-console.log(field.includes(""));
+console.log(board.includes(""));
 function changeAct() {
-  act == "x" ? (act = "o") : (act = "x");
+  act == "X" ? (act = "O") : (act = "X");
 }
 
 function step(e) {
-  if (field[e] == "" && !isWin) {
-    field[e] = act;
+  if (board[e] == "" && !isWin) {
+    board[e] = act;
     changeAct();
     render();
     check();
@@ -64,23 +66,23 @@ function step(e) {
 }
 
 function restart() {
-  field = ["", "", "", "", "", "", "", "", ""];
+  board = ["", "", "", "", "", "", "", "", ""];
   playerCord = [];
   botCord = [];
-  fieldBlock[0].innerHTML = "";
+  boardBlock[0].innerHTML = "";
   winner[0].innerHTML = "Победитель: ";
-  act = "x";
+  act = "X";
   isWin = false;
   way = [];
   render();
 }
 
 function winning(winMark) {
-  if (winMark === "x") {
+  if (winMark === "X") {
     let el = document.createElement("i");
     el.classList.add("fa-solid", "fa-xmark");
     winner[0].appendChild(el);
-  } else if (winMark === "o") {
+  } else if (winMark === "O") {
     let el = document.createElement("i");
     el.classList.add("fa-regular", "fa-circle");
     winner[0].appendChild(el);
@@ -89,64 +91,114 @@ function winning(winMark) {
 function check() {
   winCoordinates.forEach((item) => {
     if (
-      field[item[0]] == "x" &&
-      field[item[1]] == "x" &&
-      field[item[2]] == "x"
+      board[item[0]] == "X" &&
+      board[item[1]] == "X" &&
+      board[item[2]] == "X"
     ) {
       isWin = true;
-      winning("x");
+      winning("X");
     }
     if (
-      field[item[0]] == "o" &&
-      field[item[1]] == "o" &&
-      field[item[2]] == "o"
+      board[item[0]] == "O" &&
+      board[item[1]] == "O" &&
+      board[item[2]] == "O"
     ) {
       isWin = true;
-      winning("o");
+      winning("O");
     }
   });
 }
 
 function blockSize() {
   if (window.screen.width > window.screen.height) {
-    fieldBlock[0].style.width = window.screen.height * 0.4 + "px";
-    fieldBlock[0].style.height = window.screen.height * 0.4 + "px";
+    boardBlock[0].style.width = window.screen.height * 0.4 + "px";
+    boardBlock[0].style.height = window.screen.height * 0.4 + "px";
   } else {
-    fieldBlock[0].style.width = window.screen.width * 0.8 + "px";
-    fieldBlock[0].style.height = window.screen.width * 0.8 + "px";
+    boardBlock[0].style.width = window.screen.width * 0.8 + "px";
+    boardBlock[0].style.height = window.screen.width * 0.8 + "px";
   }
 }
 
-function bot() {
-  let go = true;
-  if (!isWin && field.includes("")) {
-    while (go) {
-      let rand = Math.floor(Math.random() * 9);
-      winCoordinates.forEach((cords) => {
-        if (playerCord.includes(cords[0]) && playerCord.includes(cords[1]))
-          rand = cords[2];
+function checkWin(board, player) {
+  for (const condition of winCoordinates) {
+    const [a, b, c] = condition;
+    if (board[a] === player && board[a] === board[b] && board[a] === board[c]) {
+      return true;
+    }
+  }
+  return false;
+}
 
-        if (playerCord.includes(cords[1]) && playerCord.includes(cords[2]))
-          rand = cords[0];
+// Handle game over
+function gameOver(message) {
+  alert(message);
+  gameBoard = ["", "", "", "", "", "", "", "", ""];
+  gameOn = false;
+  setTimeout(() => {
+    updateBoard();
+    gameOn = true;
+  }, 1500);
+}
 
-        if (playerCord.includes(cords[0]) && playerCord.includes(cords[2]))
-          rand = cords[1];
-        if (!playerCord.includes(rand) || !botCord.includes(rand))
-          rand = Math.floor(Math.random() * 9);
-      });
+function getEmptyCells(board) {
+  let emptyCells = [];
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] === "") {
+      emptyCells.push(i);
+    }
+  }
+  return emptyCells;
+}
+function minimax(board, player) {
+  let emptyCells = getEmptyCells(board);
 
-      if (!playerCord.includes(rand) && !botCord.includes(rand)) {
-        console.log(rand);
-        botCord.push(rand);
-        step(rand);
-        go = false;
+  if (checkWin(board, "X")) {
+    return { score: -10 };
+  } else if (checkWin(board, "O")) {
+    return { score: 10 };
+  } else if (emptyCells.length === 0) {
+    return { score: 0 };
+  }
+
+  let moves = [];
+
+  for (const cell of emptyCells) {
+    let newBoard = [...board];
+    newBoard[cell] = player;
+    let score;
+    if (player === "O") {
+      score = minimax(newBoard, "X").score;
+    } else {
+      score = minimax(newBoard, "O").score;
+    }
+    moves.push({ index: cell, score: score });
+  }
+
+  let bestMove;
+
+  if (player === "O") {
+    let highestScore = -Infinity;
+    for (const move of moves) {
+      if (move.score > highestScore) {
+        highestScore = move.score;
+        bestMove = move;
+      }
+    }
+  } else {
+    let lowestScore = Infinity;
+    for (const move of moves) {
+      if (move.score < lowestScore) {
+        lowestScore = move.score;
+        bestMove = move;
       }
     }
   }
+
+  return bestMove;
 }
 
 ///
 blockSize();
 render();
-fieldBlock[0].addEventListener("click", (e) => changeField(e.target.id));
+boardBlock[0].addEventListener("click", (e) => changeboard(e.target.id));
 but[0].addEventListener("click", restart);
